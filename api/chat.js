@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         "X-Title": "Chat Project"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
+        model: "meta-llama/llama-3.2-3b-instruct:free",
         messages: [
           {
             role: "system",
