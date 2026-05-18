@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const reply = data.choices[0].message.content;
+    const reply = data?.choices?.[0]?.message?.content || "Sin respuesta del modelo.";
     return res.status(200).json({ reply });
 
   } catch (err) {
