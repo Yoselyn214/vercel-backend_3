@@ -9,7 +9,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse body seguro
     const body =
       typeof req.body === "string"
         ? JSON.parse(req.body)
@@ -18,60 +17,55 @@ export default async function handler(req, res) {
     const message = body?.message;
 
     if (!message) {
-      return res.status(400).json({
-        error: "No message received"
-      });
+      return res.status(400).json({ error: "No message received" });
     }
 
-    // 🔥 GEMINI REQUEST CORRECTO
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: message
-                }
-              ]
-            }
-          ],
-          generationConfig: {
-            temperature: 0.4,
-            maxOutputTokens: 1500
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://elmano777.github.io",
+        "X-Title": "Chat Project"
+      },
+      body: JSON.stringify({
+        model: "google/gemma-4-26b-a4b-it:free",
+        messages: [
+          {
+            role: "system",
+            content: "Responde en español claro, ordenado y sin texto basura. Sé directo y útil."
+          },
+          {
+            role: "user",
+            content: message
           }
-        })
-      }
-    );
+        ]
+      })
+    });
 
     const data = await response.json();
 
-    // 🔍 debug (opcional pero útil)
-    console.log("GEMINI RESPONSE:", JSON.stringify(data, null, 2));
+    console.log("OPENROUTER RESPONSE:", JSON.stringify(data, null, 2));
 
-    // 🔥 validación fuerte
-    const reply =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!response.ok) {
+      return res.status(500).json({
+        error: "OpenRouter error",
+        details: data
+      });
+    }
+
+    const reply = data?.choices?.[0]?.message?.content;
 
     if (!reply) {
       return res.status(500).json({
-        error: "Gemini no devolvió respuesta válida",
+        error: "Sin respuesta del modelo",
         raw: data
       });
     }
 
-    return res.status(200).json({
-      reply
-    });
+    return res.status(200).json({ reply });
 
   } catch (err) {
-    return res.status(500).json({
-      error: err.message
-    });
+    return res.status(500).json({ error: err.message });
   }
 }
