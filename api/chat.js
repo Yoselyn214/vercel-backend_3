@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-v4-flash:free",
-        messages: [{ role: "user", content: message }]
+        messages: [{ role: "system", content: "Responde siempre en español. Usa tablas markdown cuando sea útil para explicar mejor." },{ role: "user", content: message }]
       })
     });
 
