@@ -22,8 +22,8 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-v4-flash:free",
-        messages: [{ role: "system", content: "Responde siempre en español, de forma clara y coherente. Usa tablas o código cuando sea útil." },{ role: "user", content: message }]
+        model: "meta-llama/llama-3.3-70b-instruct:free",
+        messages: [{ role: "system", content: "Responde siempre en español, de forma clara y coherente. Usa tablas o código cuando sea útil. No mezcles idiomas ni código innecesario." },{ role: "user", content: message }]
       })
     });
 
